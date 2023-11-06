@@ -1,20 +1,23 @@
 // Habdling All Message By XNS-ivy
-async function handleMessages(conn, m) {
+async function handleMessages(Naori, m) {
   async function reply(text) {
-    await conn.sendMessage(m.key.remoteJid, { text: text });
+    await Naori.sendMessage(m.key.remoteJid, { text: text });
   }
 const mmc = m.message.conversation.toLowerCase();
 
-if (mmc === ".menu") {
-    await reply(
+switch (mmc){
+  case ".menu":
+    console.log(m);
+await reply(
         "» » » Demo Menu « « «\n" +
         "► .dmmlbb (Topup Diamond MLBB)\n" +
         "► list 2\n" +
         "► list 3\n" +
         "► list 4\n" +
-        "» N A O R I - B O T «"
-    );
-}if (mmc === ".dmmlbb"){
+        "» N A O R I - B O T «");
+    break;
+  case ".dmmlbb":
+    console.log(m);
   await reply("» List Harga Diamond MLBB 💎\n\n"+
   "» 14 DM(13 + 1 Bonus ) = Rp.5,000\n\n"+
   "» 28 DM(26 + 2 Bonus ) = Rp.7,800\n\n"+
@@ -29,9 +32,12 @@ if (mmc === ".menu") {
   "» 878 DM(781 + 97 Bonus ) = Rp.232,000\n\n"+
   "» Bonus Tidak Dihitung Event Topup!!\n\n"+
   "» Silahkan Kirim Id Dan Id Server Jika Ingin Topup!\n\n"+
-  "» N A O R I - B O T «")
+  "» N A O R I - B O T «");
+  break;
+  default:
+  console.log(m);
+  break;
 }
-
 }
 
 module.exports = { handleMessages };

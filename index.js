@@ -1,35 +1,35 @@
-// file index.js by XNS-ivy
-const { default: makeWASocket, useMultiFileAuthState, DisconnectReason } = require("@whiskeysockets/baileys");
+const { default: makeWASocket, useMultiFileAuthState } = require("@whiskeysockets/baileys");
 const pino = require("pino");
-const { Boom } = require("@hapi/boom");
 const { handleMessages } = require('./src/handlingMessage');
 
-async function connectWa() {
+async function start() {
   const { state, saveCreds } = await useMultiFileAuthState('./session');
-  const conn = makeWASocket({
+  const Naori = makeWASocket({
     logger: pino({ level: 'silent' }),
     printQRInTerminal: true,
     auth: state,
     browser: ["Nyakura", "Firefox", '1.0.0'],
   });
-  conn.ev.on('connection.update', ({ connection }) => {
+
+  Naori.ev.on('connection.update', ({ connection }) => {
     if (connection === "open") {
-      console.log("Connected : " + conn.user.id.split(':')[0]);
-    } 
-    if (connection === "close") connectWa();
+      console.log("Connected: " + Naori.user.jid);
+    } else if (connection === "close") {
+      console.log("Disconnected");
+      Naori.start();
+    }
   });
-  conn.ev.on('messages.upsert', ({ messages }) => {
-    console.log(messages)
+
+  Naori.ev.on('messages.upsert', ({ messages }) => {
     if (messages && messages.length > 0) {
       const m = messages[0];
       if (m && m.message && m.message.conversation) {
-        const lowMsg = m.message.conversation.toLowerCase();
-        console.log("Get Message : " +lowMsg);
-        handleMessages(conn, m);
+        handleMessages(Naori, m);
       }
     }
   });
-  conn.ev.on('creds.update', saveCreds);
-  return conn;
+
+  Naori.ev.on('creds.update', saveCreds);
 }
-connectWa();
+
+start();
