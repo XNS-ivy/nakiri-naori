@@ -8,48 +8,65 @@ async function handleMessages(Naori, m) {
     await Naori.sendMessage(m.key.remoteJid, { text: text });
   }
 const mmc = m.message.conversation.toLowerCase();
-
-if (mmc.startsWith('.wiki')){
-  const searchTerm = mmc.substring(6).trim();
-    const options = { language: 'id' };
-    try {
-      const response = await axios.get(`https://en.wikipedia.org/w/api.php`, {
-        params: {
-          format: 'json',
-          action: 'query',
-          prop: 'extracts',
-          exintro: true,
-          explaintext: true,
-          redirects: 1,
-          titles: searchTerm
-        }
-      });
-
-      const pages = response.data.query.pages;
-      const pageId = Object.keys(pages)[0];
-      const extract = pages[pageId].extract;
-
-      if (extract) {
-        await reply(extract);
-      } else {
-        await reply("Maaf, artikel "+mmc.substring(6)+ " tidak ditemukan.");
-      }
-    } catch (error) {
-      console.error(error);
-      await reply("Terjadi kesalahan saat mencari artikel.");
+const wikiConfig = {
+    'wikien': {
+      language: 'en',
+      prefix: '.wikien'
+    },
+    'wikiid': {
+      language: 'id',
+      prefix: '.wikiid'
     }
-}
+  };
+  
+  for (const [key, config] of Object.entries(wikiConfig)) {
+    if (mmc.startsWith(config.prefix)) {
+      const searchTerm = mmc.substring(config.prefix.length).trim();
+      try {
+        const response = await axios.get(`https://${config.language}.wikipedia.org/w/api.php`, {
+          params: {
+            format: 'json',
+            action: 'query',
+            prop: 'extracts',
+            exintro: true,
+            explaintext: true,
+            redirects: 1,
+            titles: searchTerm
+          }
+        });
+        
+        const pages = response.data.query.pages;
+        const pageId = Object.keys(pages)[0];
+        const extract = pages[pageId].extract;
 
+        if (extract) {
+          await reply(extract);
+        } else {
+          await reply(`Maaf, artikel "${searchTerm}" tidak memiliki konten.`);
+        }
+      } catch (error) {
+        console.error(error);
+        await reply('Terjadi kesalahan saat mencari artikel.');
+      }
+      return;
+    }
+  }
 switch (mmc){
   case ".menu":
     console.log(m);
-    await reply(
-        "» » » Demo Menu « « «\n" +
-        "► .dmmlbb (Topup Diamond MLBB)\n" +
-        "► .wiki (query)\n" +
-        "► list 3\n" +
-        "► list 4\n" +
-        "» N A O R I - B O T «");
+    const Menu = [
+  '» » » Demo Menu « « «',
+  '► .dmmlbb (Topup Diamond MLBB)',
+  '► Wikipedia',
+  '  ► .wikiid <query> // Wiki Bahasa Indonesia',
+  '  ► .wikien <query> // Wiki Bahasa Inggris',
+  '► list 3',
+  '► list 4',
+  '» N A O R I - B O T «'
+];
+    const imagePath = "./src/naori.jpg";
+    const formattedMenu = Menu.join('\n\n');
+    reply(formattedMenu);
     break;
   case ".dmmlbb":
     console.log(m);
@@ -77,7 +94,6 @@ switch (mmc){
   default:
   console.log(m);
     break;
-}
-}
-
+    }
+  }
 module.exports = { handleMessages };
