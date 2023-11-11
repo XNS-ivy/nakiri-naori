@@ -4,10 +4,11 @@ while true; do
     echo "—————► N A O R I B O T ◄—————"
     echo "> MENU <"
     echo "1. Install Naori Bot Dependencies"
-    echo "2. Start Naori Bot"
-    echo "3. Clear Session"
-    echo "4. Unistall Naori Bot Dependencies"
-    echo "5. Exit"
+    echo "2. Normal Naori Bot"
+    echo "3. Start Naori Bot With Pairing Code "
+    echo "4. Clear Session"
+    echo "5. Unistall Naori Bot Dependencies"
+    echo "6. Exit"
     read -p "Chose Option : " choice
 
     case $choice in
@@ -27,14 +28,26 @@ while true; do
             echo ""
             echo ""
             echo "STARTING BOT » » »"
-            npm start
-            echo "Done."
+            echo ""
+            npm run normalStart
+            echo ""
             echo "—————► N A O R I B O T ◄—————"
             echo ""
             echo ""
             exit 0
             ;;
-        3)
+        3) 
+            clear
+            echo "—————► N A O R I B O T ◄—————"
+            echo ""
+            echo ""
+            npm run pairingCode
+            echo ""
+            echo ""
+            echo "—————► N A O R I B O T ◄—————"
+            exit 0
+            ;;
+        4)
             echo ""
             echo ""
             echo "CLEANING UP SESSION » » »"
@@ -45,7 +58,7 @@ while true; do
             echo ""
             echo ""
             ;;
-        4)
+        5)
             echo ""
             echo ""
             echo "UNISTALLING NAORI BOT » » »"
@@ -55,7 +68,7 @@ while true; do
             echo ""
             echo ""
             ;;
-        5)
+        6)
             echo ""
             echo ""
             echo "EXIT » » »"
