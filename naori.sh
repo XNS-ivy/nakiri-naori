@@ -16,7 +16,7 @@ while true; do
             echo ""
             echo ""
             echo "INSTALLING NAORI BOT » » »"
-            npm install
+            yarn install
             echo "Done."
             echo "—————► N A O R I B O T ◄—————"
             echo ""
@@ -29,7 +29,7 @@ while true; do
             echo ""
             echo "STARTING BOT » » »"
             echo ""
-            npm run normalStart
+            yarn run normalStart
             echo ""
             echo "—————► N A O R I B O T ◄—————"
             echo ""
@@ -41,7 +41,7 @@ while true; do
             echo "—————► N A O R I B O T ◄—————"
             echo ""
             echo ""
-            npm run pairingCode
+            yarn run pairingCode
             echo ""
             echo ""
             echo "—————► N A O R I B O T ◄—————"

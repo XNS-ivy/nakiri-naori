@@ -11,6 +11,7 @@ async function start() {
     printQRInTerminal: !useCd, 
     auth: state,
     browser: useCd ? ["Chrome (Linux)", "", ""] : ["Naori", "Firefox", '1.0.0'],
+    generateHighQualityLinkPreview: true,
   });
 
   if (useCd && !Naori.authState.creds.registered) {
@@ -47,9 +48,8 @@ async function start() {
   Naori.ev.on('messages.upsert', ({ messages }) => {
     if (messages && messages.length > 0) {
       const m = messages[0];
-      if (m && m.message && m.message.conversation) {
-        handleMessages(Naori, m);
-      }
+      // console.log(m);
+      handleMessages(Naori, m);
     }
   });
 

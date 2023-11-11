@@ -1,13 +1,36 @@
-// Habdling All Message By XNS-ivy
+// Handling All Message By XNS-ivy
 const wikipedia = require('wikipedia-js');
 const axios = require("axios");
 const fs = require('fs');
 
 async function handleMessages(Naori, m) {
+  if(!m.message) return;
+const msType = Object.keys(m.message)[0];
+const msText = msType === "conversation" ? m.message.conversation : msType === "extendedTextMessage" ? m.message.extendedTextMessage.text : msType === "imageMessage" ? m.message.imageMessage.caption : "";
+  await listener(Naori, m);
   async function reply(text) {
     await Naori.sendMessage(m.key.remoteJid, { text: text });
   }
-const mmc = m.message.conversation.toLowerCase();
+  async function listener(Naori, m){
+    const profile = m.pushName;
+    const msg = msText;
+    const messageInfo = `Message: ${msg}`;
+    const isGroup = m.key.participant;
+    const groupId = isGroup ? m.key.participant : false;
+
+    // ANSI Escape Codes for Termux
+    const colorize = (text, bgColorCode) => `\u001b[48;5;${bgColorCode}m${text}\u001b[0m`;
+
+    console.log(
+        colorize("［ Get Message ］", 36), '\n',  // 236 adalah kode warna latar belakang abu-abu di Termux
+        colorize("『 From: ", 33), profile, '\n',
+        colorize("『 On Group Number:", 31), groupId, '\n',
+        colorize("『 Message:", 36), msg, '\n',
+        colorize("\t↳ Message Type:", 34), msType, '\n'
+    );
+}
+
+const mmc = msText.toLowerCase();
 const wikiConfig = {
     'wikien': {
       language: 'en',
@@ -53,9 +76,9 @@ const wikiConfig = {
   }
 switch (mmc){
   case ".menu":
-    console.log(m);
     const Menu = [
   '» » » Demo Menu « « «',
+  'Hi '+m.pushName+'\nBerikut adalah fitur fitur Naori Bot',
   '► .dmmlbb (Topup Diamond MLBB)',
   '► Wikipedia',
   '  ► .wikiid <query> // Wiki Bahasa Indonesia',
@@ -64,12 +87,10 @@ switch (mmc){
   '► list 4',
   '» N A O R I - B O T «'
 ];
-    const imagePath = "./src/naori.jpg";
     const formattedMenu = Menu.join('\n\n');
     reply(formattedMenu);
     break;
   case ".dmmlbb":
-    console.log(m);
   await reply("» List Harga Diamond MLBB 💎\n\n"+
   "» 14 DM(13 + 1 Bonus ) = Rp.5,000\n\n"+
   "» 28 DM(26 + 2 Bonus ) = Rp.7,800\n\n"+
@@ -91,8 +112,10 @@ switch (mmc){
   "» Silahkan Kirim Id Dan Id Server Jika Ingin Topup!\n\n"+
   "» N A O R I - B O T «");
     break;
+  case ".owner":
+    await reply("https://github.com/XNS-ivy");
+    break;
   default:
-  console.log(m);
     break;
     }
   }
