@@ -6,7 +6,7 @@ const fs = require('fs');
 async function handleMessages(Naori, m) {
   if(!m.message) return;
 const msType = Object.keys(m.message)[0];
-const msText = msType === "conversation" ? m.message.conversation : msType === "extendedTextMessage" ? m.message.extendedTextMessage.text : msType === "imageMessage" ? m.message.imageMessage.caption : "";
+const msText = msType === "conversation" ? m.message.conversation : msType === "extendedTextMessage" ? m.message.extendedTextMessage.text : msType === "imageMessage" ? m.message.imageMessage.caption : msType === "protocolMessage" ? "Deleted Message:"+m.message.protocolMessage.key.id : "";
   await listener(Naori, m);
   async function reply(text) {
     await Naori.sendMessage(m.key.remoteJid, { text: text });
@@ -17,16 +17,15 @@ const msText = msType === "conversation" ? m.message.conversation : msType === "
     const messageInfo = `Message: ${msg}`;
     const isGroup = m.key.participant;
     const groupId = isGroup ? m.key.participant : false;
-
-    // ANSI Escape Codes for Termux
-    const colorize = (text, bgColorCode) => `\u001b[48;5;${bgColorCode}m${text}\u001b[0m`;
+    
+    const colorize = (text, ColorCode) => `\x1b[${ColorCode}m${text}\x1b[0m`;
 
     console.log(
-        colorize("［ Get Message ］", 36), '\n',  // 236 adalah kode warna latar belakang abu-abu di Termux
-        colorize("『 From: ", 33), profile, '\n',
-        colorize("『 On Group Number:", 31), groupId, '\n',
-        colorize("『 Message:", 36), msg, '\n',
-        colorize("\t↳ Message Type:", 34), msType, '\n'
+        colorize("［ Get Message ］", 34), '\n',
+        colorize("『 From:", 33), profile, '\n',
+        colorize("『 On Group Number:", 36), groupId, '\n',
+        colorize("『 Message:", 32), msg, '\n',
+        colorize("  ↳ Message Type:", 31), msType, '\n'
     );
 }
 
