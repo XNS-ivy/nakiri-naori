@@ -5,8 +5,8 @@ const fs = require('fs');
 
 async function handleMessages(Naori, m) {
   if(!m.message) return;
-const msType = Object.keys(m.message)[0];
-const msText = msType === "conversation" ? m.message.conversation : msType === "extendedTextMessage" ? m.message.extendedTextMessage.text : msType === "imageMessage" ? m.message.imageMessage.caption : msType === "protocolMessage" ? "Deleted Message:"+m.message.protocolMessage.key.id : "";
+  const msType = Object.keys(m.message)[0];
+  const msText = msType === "conversation" ? m.message.conversation : msType === "extendedTextMessage" ? m.message.extendedTextMessage.text : msType === "imageMessage" ? m.message.imageMessage.caption : msType === "protocolMessage" ? "Deleted: "+m.message.protocolMessage.key.id : "";
   await listener(Naori, m);
   async function reply(text) {
     await Naori.sendMessage(m.key.remoteJid, { text: text });
@@ -30,51 +30,12 @@ const msText = msType === "conversation" ? m.message.conversation : msType === "
 }
 
 const mmc = msText.toLowerCase();
-const wikiConfig = {
-    'wikien': {
-      language: 'en',
-      prefix: '.wikien'
-    },
-    'wikiid': {
-      language: 'id',
-      prefix: '.wikiid'
-    }
-  };
+if(mmc.startsWith('.')){
+  const [command, ...args] = mmc.substring(1).split(' ');
   
-  for (const [key, config] of Object.entries(wikiConfig)) {
-    if (mmc.startsWith(config.prefix)) {
-      const searchTerm = mmc.substring(config.prefix.length).trim();
-      try {
-        const response = await axios.get(`https://${config.language}.wikipedia.org/w/api.php`, {
-          params: {
-            format: 'json',
-            action: 'query',
-            prop: 'extracts',
-            exintro: true,
-            explaintext: true,
-            redirects: 1,
-            titles: searchTerm
-          }
-        });
-        
-        const pages = response.data.query.pages;
-        const pageId = Object.keys(pages)[0];
-        const extract = pages[pageId].extract;
-
-        if (extract) {
-          await reply(extract);
-        } else {
-          await reply(`Maaf, artikel "${searchTerm}" tidak memiliki konten.`);
-        }
-      } catch (error) {
-        console.error(error);
-        await reply('Terjadi kesalahan saat mencari artikel.');
-      }
-      return;
-    }
-  }
-switch (mmc){
-  case ".menu":
+switch (command){
+  case "menu":
+    const id = m.key.remoteJid;
     const Menu = [
   '» » » Demo Menu « « «',
   'Hi '+m.pushName+'\nBerikut adalah fitur fitur Naori Bot',
@@ -85,11 +46,47 @@ switch (mmc){
   '► list 3',
   '► list 4',
   '» N A O R I - B O T «'
-];
-    const formattedMenu = Menu.join('\n\n');
-    reply(formattedMenu);
-    break;
-  case ".dmmlbb":
+  ];
+  const formattedMenu = Menu.join('\n\n');
+  Naori.sendMessage(id,{image:{
+   url: "./src/naori.jpg"
+  },
+    mimeType: "image/jpeg",
+    caption: formattedMenu,
+  });
+    
+  break;
+  case "wikiid":
+  case "wikien":
+  const searchTerm = args.join(' ').trim();
+  try {
+        const response = await axios.get(`https://${command === "wikien" ? "en" : "id"}.wikipedia.org/w/api.php`, {
+          params: {
+            format: 'json',
+            action: 'query',
+            prop: 'extracts',
+            exintro: true,
+            explaintext: true,
+            redirects: 1,
+            titles: searchTerm
+          }
+        });
+        const pages = response.data.query.pages;
+          const pageId = Object.keys(pages)[0];
+          extract = pages[pageId].extract;
+
+        if (extract) {
+          await reply(extract);
+        } else {
+          await reply(`Maaf, artikel "${searchTerm}" tidak memiliki konten.`);
+        }
+      } catch (error) {
+        console.error(error);
+        await reply('Terjadi kesalahan saat mencari artikel.');
+      }
+  break;
+  
+  case "dmmlbb":
   await reply("» List Harga Diamond MLBB 💎\n\n"+
   "» 14 DM(13 + 1 Bonus ) = Rp.5,000\n\n"+
   "» 28 DM(26 + 2 Bonus ) = Rp.7,800\n\n"+
@@ -111,11 +108,12 @@ switch (mmc){
   "» Silahkan Kirim Id Dan Id Server Jika Ingin Topup!\n\n"+
   "» N A O R I - B O T «");
     break;
-  case ".owner":
-    await reply("https://github.com/XNS-ivy");
+  case "owner":
+    await reply("Berikut Adalah Owner Saya <3\n"+"https://github.com/XNS-ivy");
     break;
   default:
     break;
     }
   }
+}
 module.exports = { handleMessages };

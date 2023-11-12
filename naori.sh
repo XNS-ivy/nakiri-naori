@@ -1,10 +1,9 @@
 #!/bin/bash
-
 while true; do
     echo "—————► N A O R I B O T ◄—————"
     echo "> MENU <"
     echo "1. Install Naori Bot Dependencies"
-    echo "2. Normal Naori Bot"
+    echo "2. Normal Start Naori Bot"
     echo "3. Start Naori Bot With Pairing Code "
     echo "4. Clear Session"
     echo "5. Unistall Naori Bot Dependencies"
@@ -18,6 +17,7 @@ while true; do
             echo "INSTALLING NAORI BOT » » »"
             yarn install
             echo "Done."
+            echo ""
             echo "—————► N A O R I B O T ◄—————"
             echo ""
             echo ""
@@ -29,9 +29,8 @@ while true; do
             echo ""
             echo "STARTING BOT » » »"
             echo ""
-            yarn run normalStart
-            echo ""
             echo "—————► N A O R I B O T ◄—————"
+            yarn run normalStart
             echo ""
             echo ""
             exit 0
@@ -41,10 +40,12 @@ while true; do
             echo "—————► N A O R I B O T ◄—————"
             echo ""
             echo ""
+            echo "STARTING BOT » » »"
+            echo ""
+            echo "—————► N A O R I B O T ◄—————"
             yarn run pairingCode
             echo ""
             echo ""
-            echo "—————► N A O R I B O T ◄—————"
             exit 0
             ;;
         4)
@@ -54,6 +55,7 @@ while true; do
             rm -r session
             mkdir session
             echo "Done."
+            echo ""
             echo "—————► N A O R I B O T ◄—————"
             echo ""
             echo ""
@@ -64,6 +66,7 @@ while true; do
             echo "UNISTALLING NAORI BOT » » »"
             rm -r node_modules
             echo "Done."
+            echo ""
             echo "—————► N A O R I B O T ◄—————"
             echo ""
             echo ""
@@ -72,6 +75,7 @@ while true; do
             echo ""
             echo ""
             echo "EXIT » » »"
+            echo ""
             echo "—————► N A O R I B O T ◄—————"
             echo ""
             echo ""
