@@ -435,6 +435,11 @@ any-base@^1.1.0:
   resolved "https://registry.yarnpkg.com/any-base/-/any-base-1.1.0.tgz#ae101a62bc08a597b4c9ab5b7089d456630549fe"
   integrity sha512-uMgjozySS8adZZYePpaWs8cxB9/kdzmpX6SgJZ+wbz1K5eYk5QMYDVJaZKhxyIHUdnnJkfR7SVgStgH7LkGUyg==
 
+anyanime@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/anyanime/-/anyanime-1.3.0.tgz#1dc0247262a00eca1723428d5b2278334a5ad10d"
+  integrity sha512-cgD+Tour+f6l9UT7oMmWFqqGvdtvzcIB9rFI/BHLr4tLTd9j6LSIadqvK8XKkIK4YS2WKC9HAPxr8V4Na6m5cw==
+
 asynckit@^0.4.0:
   version "0.4.0"
   resolved "https://registry.npmjs.org/asynckit/-/asynckit-0.4.0.tgz"

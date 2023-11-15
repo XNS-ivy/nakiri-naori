@@ -2,15 +2,22 @@
 const wikipedia = require('wikipedia-js');
 const axios = require("axios");
 const fs = require('fs');
+const api = require('./apikey.json');
+const config = require('./config.json');
+const botReply = require('./reply.json');
+const anyanime = require('anyanime');
+
 
 async function handleMessages(Naori, m) {
   if(!m.message) return;
   const msType = Object.keys(m.message)[0];
-  const msText = msType === "conversation" ? m.message.conversation : msType === "extendedTextMessage" ? m.message.extendedTextMessage.text : msType === "imageMessage" ? m.message.imageMessage.caption : msType === "protocolMessage" ? "Deleted: "+m.message.protocolMessage.key.id : "";
+  const msText = msType === "conversation" ? m.message.conversation : msType === "extendedTextMessage" ? m.message.extendedTextMessage.text : msType === "imageMessage" ? m.message.imageMessage.caption : msType === "protocolMessage" ? "Deleted" : "";
   await listener(Naori, m);
   async function reply(text) {
-    await Naori.sendMessage(m.key.remoteJid, { text: text });
+    await Naori.sendMessage(m.key.remoteJid, { text: text },
+    { quoted: m});
   }
+
   async function listener(Naori, m){
     const profile = m.pushName;
     const msg = msText;
@@ -37,55 +44,63 @@ switch (command){
   case "menu":
     const id = m.key.remoteJid;
     const Menu = [
-  '» » » Demo Menu « « «',
+  '≡≡≡▷ MENU ◁≡≡≡',
   'Hi '+m.pushName+'\nBerikut adalah fitur fitur Naori Bot',
   '► .dmmlbb (Topup Diamond MLBB)',
   '► Wikipedia',
   '  ► .wikiid <query> // Wiki Bahasa Indonesia',
   '  ► .wikien <query> // Wiki Bahasa Inggris',
   '► list 3',
-  '► list 4',
-  '» N A O R I - B O T «'
-  ];
+  '► list 4\n\n'+botReply.Footer];
+  
   const formattedMenu = Menu.join('\n\n');
   Naori.sendMessage(id,{image:{
    url: "./src/naori.jpg"
   },
     mimeType: "image/jpeg",
     caption: formattedMenu,
-  });
+  },{quoted: m});
     
   break;
   case "wikiid":
   case "wikien":
   const searchTerm = args.join(' ').trim();
   try {
-        const response = await axios.get(`https://${command === "wikien" ? "en" : "id"}.wikipedia.org/w/api.php`, {
-          params: {
-            format: 'json',
-            action: 'query',
-            prop: 'extracts',
-            exintro: true,
-            explaintext: true,
-            redirects: 1,
-            titles: searchTerm
-          }
-        });
-        const pages = response.data.query.pages;
-          const pageId = Object.keys(pages)[0];
-          extract = pages[pageId].extract;
+    const response = await axios.get(`https://${command === "wikien" ? "en" : "id"}.wikipedia.org/w/api.php`, {
+    params: {
+    format: 'json',
+    action: 'query',
+    prop: 'extracts',
+    exintro: true,
+    explaintext: true,
+    redirects: 1,
+    titles: searchTerm
+    }
+    });
+    const pages = response.data.query.pages;
+    const pageId = Object.keys(pages)[0];
+    extract = pages[pageId].extract;
 
-        if (extract) {
-          await reply(extract);
-        } else {
-          await reply(`Maaf, artikel "${searchTerm}" tidak memiliki konten.`);
-        }
+    if (extract) {
+      await reply(extract);
+    } else {
+    await reply(`Maaf, artikel "${searchTerm}" tidak memiliki konten.\n\n`+botReply.Footer);
+    }
       } catch (error) {
-        console.error(error);
-        await reply('Terjadi kesalahan saat mencari artikel.');
-      }
+    console.error(error);
+    await reply('Terjadi kesalahan saat mencari artikel.\n\n'+botReply.Footer);
+    }
   break;
-  
+  case "randomanime":
+  try {
+    const animeResult = await anyanime.getAnime({ type: "png", number: 1 });
+    const animeImageUrl = animeResult[0]; // Assuming the response is an array of image URLs
+    await Naori.sendMessage(m.key.remoteJid, { image: { url: animeImageUrl } }, { quoted: m });
+    } catch (error) {
+    console.error('Error fetching anime image:', error);
+    await reply('Terjadi kesalahan saat mencari gambar anime.\n\n' + botReply.Footer);
+    }
+  break;
   case "dmmlbb":
   await reply("» List Harga Diamond MLBB 💎\n\n"+
   "» 14 DM(13 + 1 Bonus ) = Rp.5,000\n\n"+
@@ -105,11 +120,11 @@ switch (command){
   "» Weekly Diamond Pass 5x = Rp.146,000\n\n" +
   "» Twilight Member Pass = Rp.130,000\n\n" +
   "» Bonus Tidak Dihitung Event Topup!!\n\n"+
-  "» Silahkan Kirim Id Dan Id Server Jika Ingin Topup!\n\n"+
-  "» N A O R I - B O T «");
+  "» Silahkan Kirim Id Dan Id Server Jika Ingin Topup!\n\n"+botReply.Footer);
     break;
   case "owner":
-    await reply("Berikut Adalah Owner Saya <3\n"+"https://github.com/XNS-ivy");
+    await reply("Berikut Adalah Owner Saya <3\n"+"https://github.com/XNS-ivy\n"+
+    "Nama: "+config.ownerName);
     break;
   default:
     break;
