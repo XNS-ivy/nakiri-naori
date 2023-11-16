@@ -5,6 +5,7 @@ const useCd = process.argv.includes("--code");
 const Boom = require('@hapi/boom');
 
 async function start() {
+  try {
   const { state, saveCreds } = await useMultiFileAuthState("./session");
   const Naori = makeWASocket({
     logger: pino({ level: "silent" }),
@@ -36,7 +37,7 @@ async function start() {
   Naori.ev.on('connection.update', async ({ connection }) => {
     if (connection === "open") {
       console.log("Connected: " + Naori.user.id.split(":")[0]);
-    } else if (connection === "close") {
+  } else if (connection === "close") {
       try { 
         await start();
       } catch (error){
@@ -44,7 +45,7 @@ async function start() {
       }
     }
   });
-
+  Naori.ev.on('creds.update', saveCreds);
   Naori.ev.on('messages.upsert', ({ messages }) => {
     if (messages && messages.length > 0) {
       const m = messages[0];
@@ -52,8 +53,9 @@ async function start() {
       handleMessages(Naori, m);
     }
   });
-
-  Naori.ev.on('creds.update', saveCreds);
+} catch (error){
+  console.error('Error in start function:', error);
+}
 }
 
 start();
