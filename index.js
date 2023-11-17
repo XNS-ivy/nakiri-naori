@@ -7,6 +7,10 @@ const Boom = require('@hapi/boom');
 const SESSION_FILE_PATH = "./session";
 const PHONE_NUMBER_PROMPT_DELAY = 3000
 
+function clearConsole() {
+  console.clear();
+}
+
 async function start() {
   try {
   const { state, saveCreds } = await useMultiFileAuthState(SESSION_FILE_PATH);
@@ -43,6 +47,7 @@ const handleConnectionUpdate = async ({ connection }) => {
   } else if (connection === "close") {
     try {
       Naori.ev.off('connection.update', handleConnectionUpdate);
+      clearConsole();
       await start();
     } catch (error) {
       throw Boom.badImplementation('Error: ', error);
@@ -65,3 +70,7 @@ const handleConnectionUpdate = async ({ connection }) => {
   }
 }
 start();
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
