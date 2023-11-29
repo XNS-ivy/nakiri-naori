@@ -6,15 +6,10 @@ const api = require('./apikey.json');
 const config = require('./config.json');
 const botReply = require('./reply.json');
 const anyanime = require('anyanime');
-const Jikan = require ('jikan-node');
 
 async function handleMessages(Naori, m) {
 if(!m.message) return;
   const msType = Object.keys(m.message)[0];
-  
-// handling ephemeral message
-
-//
 
   const msText = msType === "conversation" ? m.message.conversation : msType === "extendedTextMessage" ? m.message.extendedTextMessage.text : msType === "imageMessage" ? m.message.imageMessage.caption : msType === "protocolMessage" ? "Deleted" : "";
 // Chat Variables
