@@ -1,15 +1,11 @@
-const { default: makeWASocket, useMultiFileAuthState } = require("@whiskeysockets/baileys");
+const {default: makeWASocket, useMultiFileAuthState } = require("@whiskeysockets/baileys");
 const pino = require("pino");
 const { handleMessages } = require("./src/handlingMessage");
 const useCd = process.argv.includes("--code");
 const Boom = require('@hapi/boom');
 // --------------------
 const SESSION_FILE_PATH = "./session";
-const PHONE_NUMBER_PROMPT_DELAY = 3000
-
-function clearConsole() {
-  console.clear();
-}
+const PHONE_NUMBER_PROMPT_DELAY = 3000;
 
 async function start() {
   try {
@@ -46,8 +42,6 @@ const handleConnectionUpdate = async ({ connection }) => {
     console.log("Connected: " + Naori.user.id.split(":")[0]);
   } else if (connection === "close") {
     try {
-      Naori.ev.off('connection.update', handleConnectionUpdate);
-      clearConsole();
       await start();
     } catch (error) {
       throw Boom.badImplementation('Error: ', error);
